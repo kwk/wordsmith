@@ -13,7 +13,7 @@ func init() {
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "Usage of wordsmith:")
 		fmt.Fprintln(os.Stderr, "")
-		fmt.Fprintln(os.Stderr, "  wordsmith -type=<type> -format=json")
+		fmt.Fprintln(os.Stderr, "  wordsmith -pointer -type=<type> -format=json")
 		fmt.Fprintln(os.Stderr, "")
 		flag.PrintDefaults()
 	}
@@ -22,6 +22,7 @@ func init() {
 }
 
 func main() {
+	typePointer := flag.Bool("pointer", false, "Determines whether a type is a pointer or not")
 	typeName := flag.String("type", "", "Type that hosts io.WriterTo interface implementation")
 	packageName := flag.String("package", "", "Package name")
 	format := flag.String("format", "json", "Encoding format")
@@ -33,23 +34,22 @@ func main() {
 		return
 	}
 
-	outputDir, err := packageDir(*packageName)
+	pkgDir, err := packageDir(*packageName)
 	if err != nil {
 		panic(err)
 	}
 
 	outputFile := formatFileName(*typeName)
-	writer, err := os.Create(filepath.Join(outputDir, outputFile))
+	writer, err := os.Create(filepath.Join(pkgDir, outputFile))
 	if err != nil {
 		panic(err)
 	}
 	defer writer.Close()
 
-	generator := &Generator{
-		Type:   *typeName,
-		Format: JSON}
+	generator := &Generator{Format: JSON}
 
-	if err = generator.Generate(writer); err != nil {
+	m := metadata(*typeName, *typePointer, pkgDir)
+	if err := generator.Generate(writer, m); err != nil {
 		panic(err)
 	}
 
@@ -76,4 +76,18 @@ func packageDir(packageName string) (string, error) {
 	}
 
 	return workDir, nil
+}
+
+func metadata(typeName string, pointerType bool, packageDir string) (m Metadata) {
+	m.Object = "obj"
+	m.Type = typeName
+	m.PackageName = filepath.Base(packageDir)
+
+	if pointerType {
+		m.MarshalObject = m.Object
+	} else {
+		m.MarshalObject = fmt.Sprintf("&%s", m.Object)
+	}
+
+	return m
 }
