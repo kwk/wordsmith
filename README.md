@@ -80,7 +80,7 @@ Note that right now it supports only `json` format.
 
 #### Author
 
-Svett Ralchev <ask@ralch.com>
+[Svett Ralchev](http://www.ralch.com)
 
 #### License
 
