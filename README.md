@@ -76,7 +76,9 @@ func (obj Point) WriteTo(writer io.Writer) (int64, error) {
 }
 ```
 
-Note that right now it supports only `json` format.
+*Note that right now it supports only `json` format. The tool is not production
+ready and does not have test coverage. It developed as a showcase for [my recent
+blog post article](http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/).*
 
 #### Author
 
