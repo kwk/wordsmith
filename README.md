@@ -54,7 +54,7 @@ Then `go:generate` command should be executed:
 $ go generate
 ```
 
-The `wordsmith` tool generates `point_writerto.go` fila in the same package,
+The `wordsmith` tool generates `point_writerto.go` file in the same package,
 where `Point` struct lives:
 
 ```
